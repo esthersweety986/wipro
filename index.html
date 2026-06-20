@@ -1,0 +1,237 @@
+HTML
+
+
+<table border="3">
+   <tr>
+<th>Name</th>
+<th colspan="3">Skills</th>
+   </tr>
+<tr>
+<td>James</td>
+<td>JAVA</td>
+<td>C</td>
+<td>HTML</td>
+   </tr>
+   <tr>
+    <td>Gudio</td>
+    <td>C++</td>
+    <td>Python</td>
+    <td>PHP</td>
+   </tr>
+   
+</table>
+
+using row span for table
+
+
+<table border="3">
+ <tr>
+<th>Name</th>
+<th>Companies</th>
+ </tr>
+ <tr>
+    <td rowspan="3">James</td>
+    <td>Sun MicroSystems</td>
+    
+ </tr>
+ <tr>
+    <td>Oracle</td>
+ </tr>
+ <tr>
+    <td>Liquid robotics</td>
+ </tr>
+ <tr>
+    <td rowspan="3">Guido</td>
+    <td>Google</td>
+ </tr>
+ <tr>
+    <td>Dropbox</td>
+ </tr>
+ <tr>
+    <td>MicroSystems</td>
+ </tr>
+</table>
+
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Seating Portal</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+body{
+font-family:Arial;
+background: linear-gradient(135deg, #020617, #1e3a8a, #0f172a);
+color:white;
+text-align:center;
+margin:0;
+min-height:100vh;
+}
+
+/* Header */
+.header{
+background: linear-gradient(90deg, #020617, #1e3a8a);
+padding:25px;
+box-shadow:0 4px 15px rgba(0,0,0,0.5);
+}
+
+.header h1{
+margin:5px;
+}
+
+.header p{
+margin:0;
+color:#94a3b8;
+}
+
+/* Card */
+.card{
+background: rgba(255,255,255,0.95);
+color:black;
+padding:25px;
+border-radius:15px;
+max-width:420px;
+margin:40px auto;
+box-shadow:0 10px 30px rgba(0,0,0,0.4);
+}
+
+/* Input */
+input{
+padding:12px;
+width:70%;
+border-radius:8px;
+border:1px solid #ccc;
+}
+
+/* Button */
+button{
+padding:12px 15px;
+background:#22c55e;
+color:white;
+border:none;
+border-radius:8px;
+cursor:pointer;
+}
+
+button:hover{
+background:#16a34a;
+}
+
+/* Result */
+.result{
+text-align:left;
+margin-top:20px;
+}
+
+.result p{
+margin:6px 0;
+}
+
+.highlight{
+background:#ecfdf5;
+padding:10px;
+border-radius:8px;
+margin-top:10px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+<h1>WIPRO OFFFLINE BITS EXAMINATION(2026)</h1>
+<h3>JYOTI NIVAS COLLEGE AUTONOMOUS</h3>
+<h3>CANDIDATE SEATING ARRANGEMENT</h3>
+<p>CHECK YOUR SEATING DETAILS USING YOUR ID(EX:-2024TH12...)!</p>
+
+<h4>Date:29-03-2026, SHIFT : FN</h4>
+
+<p>NOTE:-⚠️All characters must be in capital letters!</p>
+<P>⚠️CHECK YOUR ID PROPERLY BEFORE ENTERING</P>
+</div>
+
+<div class="card">
+
+<input id="idInput" placeholder="ENTER CANDIDATE ID" style="text-transform:uppercase;" autofocus>
+<button onclick="search()">Search</button>
+
+<div id="result" class="result"></div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<script>
+
+let data = {};
+
+fetch("students.xlsx")
+.then(res => res.arrayBuffer())
+.then(fileData => {
+
+let workbook = XLSX.read(fileData);
+let sheet = workbook.Sheets[workbook.SheetNames[0]];
+let json = XLSX.utils.sheet_to_json(sheet);
+
+json.forEach(row => {
+
+data[row["Candidate ID"]] = {
+    name: row["Candidate Name"],
+    system: row["System Number"],
+    lab: row["Lab"],
+    floor: row["Floor"],
+    block: row["Block"],
+};
+
+});
+
+})
+.catch(() => {
+document.getElementById("result").innerHTML = "❌ Error loading Excel file";
+});
+
+function search(){
+
+if(Object.keys(data).length === 0){
+document.getElementById("result").innerHTML="⏳ Please wait... Loading student data...";
+return;
+}
+
+let id = document.getElementById("idInput").value;
+id = id.trim().toUpperCase();
+
+let s=data[id];
+
+if(!s){
+document.getElementById("result").innerHTML="❌ Student not found. Please check your ID carefully.<br><br>👉 If still not found, report to 1ST Floor, Lab , DEGREE BLOCK.";
+return;
+}
+
+document.getElementById("result").innerHTML = `
+
+<h2> ${s.name}</h2>
+
+<p><b>System:</b> ${s.system}</p>
+<p><b>Lab:</b> ${s.lab}</p>
+<p><b>Floor:</b> ${s.floor}</p>
+
+
+`;
+
+}
+
+document.getElementById("idInput").addEventListener("keydown", function(e){
+if(e.key === "Enter"){
+e.preventDefault();
+search();
+}
+});
+
+</script>
+
+</body>
+</html>
